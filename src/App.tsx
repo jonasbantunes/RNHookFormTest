@@ -1,6 +1,5 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {Alert} from 'react-native';
 import styled from 'styled-components/native';
 import Button from './components/Button';
 import Input from './components/Input';
@@ -16,6 +15,7 @@ export interface FormData {
 }
 
 const App = () => {
+  const [result, setResult] = useState<'Success' | 'Invalid' | null>(null);
   const {control, handleSubmit} = useForm<FormData>({
     defaultValues: {
       email: '',
@@ -28,11 +28,11 @@ const App = () => {
       data.email !== VALID_CREDENTIALS.email ||
       data.password !== VALID_CREDENTIALS.password
     ) {
-      Alert.alert('Error', 'Invalid credentials.', [{text: 'Close'}]);
+      setResult('Invalid');
       return;
     }
 
-    Alert.alert('Success', 'Credentials accepted.', [{text: 'OK'}]);
+    setResult('Success');
   };
 
   return (
@@ -41,17 +41,28 @@ const App = () => {
         control={control}
         name="email"
         render={({field: {value, onChange}}) => (
-          <StyledInput label="Email" value={value} onChange={onChange} />
+          <StyledInput
+            accessibilityLabel="Email"
+            label="Email"
+            value={value}
+            onChange={onChange}
+          />
         )}
       />
       <Controller
         control={control}
         name="password"
         render={({field: {value, onChange}}) => (
-          <StyledInput label="Password" value={value} onChange={onChange} />
+          <StyledInput
+            accessibilityLabel="Password"
+            label="Password"
+            value={value}
+            onChange={onChange}
+          />
         )}
       />
       <StyledButton onPress={handleSubmit(onSubmit)}>Submit</StyledButton>
+      {result != null ? <StyledResult>{result}</StyledResult> : null}
     </StyledContainer>
   );
 };
@@ -71,6 +82,15 @@ const StyledInput = styled(Input)`
 
 const StyledButton = styled(Button)`
   margin-top: 16px;
+`;
+
+const StyledResult = styled.Text`
+  margin-top: 32px;
+  font-size: 20px;
+  line-height: 24px;
+  text-align: center;
+  font-weight: bold;
+  color: #152536;
 `;
 
 export default App;

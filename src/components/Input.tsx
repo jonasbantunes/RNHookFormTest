@@ -3,19 +3,30 @@ import {StyleProp, ViewStyle} from 'react-native';
 import styled from 'styled-components/native';
 
 export interface InputProps {
+  accessibilityLabel?: string;
   label: string;
-  value?: string;
   onChange?: (text: string) => void;
   style?: StyleProp<ViewStyle>;
+  value?: string;
 }
 
-const Input = ({label, value, onChange, style}: InputProps) => {
+const Input = ({
+  accessibilityLabel,
+  label,
+  onChange,
+  style,
+  value,
+}: InputProps) => {
   return (
     <StyledContainer style={style}>
       <StyledLabel>{label}</StyledLabel>
 
       <StyledInputContainer>
-        <StyledInput value={value} onChangeText={onChange} />
+        <StyledInput
+          accessibilityLabel={accessibilityLabel}
+          onChangeText={onChange}
+          value={value}
+        />
       </StyledInputContainer>
     </StyledContainer>
   );
