@@ -1,107 +1,76 @@
-import React, {type PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import React from 'react';
+import {Controller, useForm} from 'react-hook-form';
+import {Alert} from 'react-native';
+import styled from 'styled-components/native';
+import Button from './components/Button';
+import Input from './components/Input';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-const Section: React.FC<
-  PropsWithChildren<{
-    title: string;
-  }>
-> = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
+const VALID_CREDENTIALS = {
+  email: 'user@mail.com',
+  password: '123456',
 };
 
-const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+export interface FormData {
+  email: string;
+  password: string;
+}
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+const App = () => {
+  const {control, handleSubmit} = useForm<FormData>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = (data: FormData) => {
+    if (
+      data.email !== VALID_CREDENTIALS.email ||
+      data.password !== VALID_CREDENTIALS.password
+    ) {
+      Alert.alert('Error', 'Invalid credentials.', [{text: 'Close'}]);
+      return;
+    }
+
+    Alert.alert('Success', 'Credentials accepted.', [{text: 'OK'}]);
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <StyledContainer>
+      <Controller
+        control={control}
+        name="email"
+        render={({field: {value, onChange}}) => (
+          <StyledInput label="Email" value={value} onChange={onChange} />
+        )}
+      />
+      <Controller
+        control={control}
+        name="password"
+        render={({field: {value, onChange}}) => (
+          <StyledInput label="Password" value={value} onChange={onChange} />
+        )}
+      />
+      <StyledButton onPress={handleSubmit(onSubmit)}>Submit</StyledButton>
+    </StyledContainer>
   );
 };
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+const StyledContainer = styled.ScrollView.attrs({
+  contentContainerStyle: {
+    paddingVertical: 24,
+    paddingHorizontal: 8,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+})`
+  background: white;
+`;
+
+const StyledInput = styled(Input)`
+  margin-top: 16px;
+`;
+
+const StyledButton = styled(Button)`
+  margin-top: 16px;
+`;
 
 export default App;
